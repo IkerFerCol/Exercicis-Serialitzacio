@@ -22,9 +22,9 @@ public class Main {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("Assignaturas.txt"))) {
             oos.writeObject(lista);
         } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
+            System.out.println(e.getMessage());
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.out.println(e.getMessage());
         }
 
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("Assignaturas.txt"))){
@@ -39,11 +39,11 @@ public class Main {
             System.out.println("La media es: " + media);
 
         } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
+            System.out.println(e.getMessage());
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.out.println(e.getMessage());
         } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
+            System.out.println(e.getMessage());
         }
         scanner.close();
 
