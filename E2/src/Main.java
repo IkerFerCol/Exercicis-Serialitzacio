@@ -1,21 +1,26 @@
 import java.io.*;
+import java.util.HashMap;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        Assignatura[] assignaturas = new Assignatura[6];
+        HashMap<String, Double> lista = new HashMap<>();
         Scanner scanner = new Scanner(System.in);
-        String[] nombresassignaturas = {"Programacion", "Lenguaje", "Entornos", " Base Datos", "Sistemas", "Fol"};
+        String[] nombresassignaturas = {"Programacion", "Lenguaje", "Entornos", "Base Datos", "Sistemas", "Fol"};
 
-        for (int i = 0; i < assignaturas.length; i++) {
-            assignaturas[i] = new Assignatura(nombresassignaturas[i]);
-            System.out.print("Introduce la nota de la asignatura " + nombresassignaturas[i] + ": ");
+        for (String asignatura : nombresassignaturas) {
+            System.out.print("Introduce la nota de la asignatura " + asignatura + ": ");
             double nota = scanner.nextDouble();
-            assignaturas[i].setNota(nota);
+            if (nota >= 0 && nota <= 10) {
+                lista.put(asignatura, nota);
+            } else {
+                System.out.println("La nota no es valida.");
+                break;
+            }
         }
 
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("Assignaturas.txt"))) {
-            oos.writeObject(assignaturas);
+            oos.writeObject(lista);
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
@@ -23,13 +28,14 @@ public class Main {
         }
 
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("Assignaturas.txt"))){
-            Assignatura[] deserializado = (Assignatura[]) ois.readObject();
+            HashMap<String, Double> deserializado = (HashMap<String, Double>) ois.readObject();
             double suma = 0;
-            for (Assignatura assignatura : deserializado) {
-                System.out.println(assignatura.toString());
-                suma += assignatura.getNota();
+            for (String assignatura : deserializado.keySet()) {
+                double nota = deserializado.get(assignatura);
+                System.out.println(assignatura + ", Nota: " + nota);
+                suma += nota;
             }
-            double media = suma / deserializado.length;
+            double media = suma / deserializado.size();
             System.out.println("La media es: " + media);
 
         } catch (FileNotFoundException e) {

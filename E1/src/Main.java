@@ -1,51 +1,59 @@
 import java.io.*;
 import java.util.Scanner;
 
-class Main {
+public class Main {
     public static void main(String[] args) {
-        Asignatura[] asignaturas = new Asignatura[6];
+        Assignatura[] assignaturas = new Assignatura[6];
         Scanner scanner = new Scanner(System.in);
-        String[] nombres = {"Programacion", "Base de datos", "Lenguaje", "Entornos", "Sistemas", "Fol"};
+        String[] nombresassignaturas = {"Programacion", "Lenguaje", "Entornos", "Base Datos", "Sistemas", "Fol"};
 
-        for (int i = 0; i < nombres.length; i++) {
-            asignaturas[i] = new Asignatura(nombres[i]);
-            System.out.print("Introduce la nota de " + nombres[i] + ": ");
+        for (int i = 0; i < assignaturas.length; i++) {
+            assignaturas[i] = new Assignatura(nombresassignaturas[i]);
+            System.out.print("Introduce la nota de la asignatura " + nombresassignaturas[i] + ": ");
             double nota = scanner.nextDouble();
-            asignaturas[i].setNota(nota);
-        }
-
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("notasDAM.ser"))) {
-            oos.writeObject(asignaturas);
-            System.out.println("Las notas se han guardado.");
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        try (ObjectInputStream os = new ObjectInputStream(new FileInputStream("notasDAM.ser"))) {
-            Asignatura[] notasdeserializadas = new Asignatura[6];
-            double suma = 0;
-            for (Asignatura asignatura : asignaturas) {
-                System.out.println(asignatura);
-                suma += asignatura.getNota();
+            if (nota >= 0 && nota <= 10) {
+                assignaturas[i].setNota(nota);
+            } else {
+                System.out.println("La nota no es valida");
+                break;
             }
-            double media = suma / asignaturas.length;
-            System.out.println("Media: " + media);
+        }
+
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("Assignaturas.txt"))) {
+            oos.writeObject(assignaturas);
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("Assignaturas.txt"))){
+            Assignatura[] deserializado = (Assignatura[]) ois.readObject();
+            double suma = 0;
+            for (Assignatura assignatura : deserializado) {
+                System.out.println(assignatura.toString());
+                suma += assignatura.getNota();
+            }
+            double media = suma / deserializado.length;
+            System.out.println("La media es: " + media);
+
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
         scanner.close();
     }
 }
 
-class Asignatura implements Serializable {
+
+class Assignatura implements Serializable {
     private String nombre;
     private double nota;
 
-    public Asignatura(String nombre) {
+    public Assignatura(String nombre) {
         this.nombre = nombre;
     }
 
@@ -62,15 +70,9 @@ class Asignatura implements Serializable {
     }
 
     public void setNota(double nota) {
-        if (nota >= 0 && nota <= 10) {
-            this.nota = nota;
-        } else {
-            System.out.println("Nota no válida");
-        }
+        this.nota = nota;
     }
-
-    @Override
     public String toString() {
-        return "Asignatura: " + nombre + ", Nota: " + nota;
+        return "Nombre: " + nombre + ", Nota: " + nota;
     }
 }
